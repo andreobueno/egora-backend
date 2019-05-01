@@ -24,7 +24,9 @@
     "@adonisjs/framework": "^5.0.7",
     "@adonisjs/ignitor": "^2.0.6",
     "@adonisjs/lucid": "^5.0.4",
-    "pg": "^7.10.0"
+    "pg": "^7.10.0",
+    "lodash": ">=4.17.11",
+    "extend": ">=3.0.2"
   },
   "devDependencies": {
     "eslint": "^5.16.0",
