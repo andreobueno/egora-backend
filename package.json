@@ -24,6 +24,7 @@
     "@adonisjs/framework": "^5.0.7",
     "@adonisjs/ignitor": "^2.0.6",
     "@adonisjs/lucid": "^5.0.4",
+    "body-parser": "^1.19.0",
     "pg": "^7.10.0"
   },
   "devDependencies": {
