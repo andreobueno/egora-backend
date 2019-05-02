@@ -1,5 +1,6 @@
 "use strict";
 
+const Member = use("App/Models/Member");
 const PriceStrike = use("App/Models/PriceStrike");
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
@@ -36,7 +37,7 @@ class PriceStrikeController {
      * @param {Response} ctx.response
      */
     async store({ request, response }) {
-        const data = request.only(["member_id", "strikeNumber"]);
+        const data = request.only(["member_id", "strike_number"]);
 
         const priceStrike = await PriceStrike.create(data);
 
@@ -55,8 +56,19 @@ class PriceStrikeController {
     async show({ params }) {
         // const priceStrike = await PriceStrike.findOrFail(params.id);
 
+        const member = await Member.query()
+            .where({ facebook: params.id })
+            .first();
+
+        if (!member) {
+            /* return response
+                .status(404)
+                .send({ error: { message: "User not Found!" } });*/
+            return [];
+        }
+
         const priceStrike = await PriceStrike.query()
-            .where({ id: params.id })
+            .where({ member_id: member.id })
             .with("member")
             .fetch();
 
@@ -72,7 +84,7 @@ class PriceStrikeController {
      * @param {Response} ctx.response
      */
     async update({ params, request }) {
-        const data = request.only(["member_id", "strikeNumber"]);
+        const data = request.only(["member_id", "strike_number"]);
 
         const priceStrike = await PriceStrike.findOrFail(params.id);
 
