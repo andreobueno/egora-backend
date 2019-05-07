@@ -27,3 +27,5 @@ Route.resource("/posts", "PostController")
 Route.resource("/members", "MemberController").apiOnly();
 
 Route.resource("/priceStrikes", "PriceStrikeController").apiOnly();
+
+Route.resource("/messages", "MessageController").apiOnly();

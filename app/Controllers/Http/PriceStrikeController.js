@@ -37,11 +37,34 @@ class PriceStrikeController {
      * @param {Response} ctx.response
      */
     async store({ request, response }) {
-        const data = request.only(["member_id", "strike_number"]);
+        const data = request.only(["name", "facebookLink"]);
+        const member = await Member.query()
+            .where({ facebook: data.facebookLink })
+            .first();
+        if (!member) {
+            const newMember = await Member.create({
+                name: data.name,
+                facebook: data.facebookLink
+            });
+            const priceStrike = await PriceStrike.create({
+                member_id: newMember.id,
+                strike_number: 1
+            });
+            return priceStrike;
+        } else {
+            const memberStrikeNumber = await PriceStrike.query()
+                .where({ member_id: member.id })
+                .count();
 
-        const priceStrike = await PriceStrike.create(data);
+            let [{ count }] = memberStrikeNumber;
 
-        return priceStrike;
+            const priceStrike = await PriceStrike.create({
+                member_id: member.id,
+                strike_number: 1 + Number(count)
+            });
+
+            return priceStrike;
+        }
     }
 
     /**
