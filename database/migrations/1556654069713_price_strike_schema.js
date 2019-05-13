@@ -14,7 +14,7 @@ class PriceStrikeSchema extends Schema {
                 .inTable("members")
                 .onUpdate("CASCADE")
                 .onDelete("SET NULL");
-            table.integer("strike_number").notNullable();
+            table.bool("active").notNullable();
             table.timestamps();
         });
     }

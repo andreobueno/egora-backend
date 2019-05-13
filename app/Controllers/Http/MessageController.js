@@ -41,7 +41,7 @@ class MessageController {
         return message;
     }
 
-    async destroy({ params, request, response }) {
+    async destroy({ params }) {
         const message = await Message.findOrFail(params.id);
 
         await message.delete();

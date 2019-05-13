@@ -22,6 +22,7 @@ class PriceStrikeController {
      */
     async index({ request, response, view }) {
         const priceStrikes = await PriceStrike.query()
+            .where({ active: 1 })
             .with("member")
             .fetch();
 
@@ -37,30 +38,24 @@ class PriceStrikeController {
      * @param {Response} ctx.response
      */
     async store({ request, response }) {
-        const data = request.only(["name", "facebookLink"]);
+        const data = request.only(["name", "facebook"]);
         const member = await Member.query()
-            .where({ facebook: data.facebookLink })
+            .where({ facebook: data.facebook })
             .first();
         if (!member) {
             const newMember = await Member.create({
                 name: data.name,
-                facebook: data.facebookLink
+                facebook: data.facebook
             });
             const priceStrike = await PriceStrike.create({
                 member_id: newMember.id,
-                strike_number: 1
+                active: 1
             });
             return priceStrike;
         } else {
-            const memberStrikeNumber = await PriceStrike.query()
-                .where({ member_id: member.id })
-                .count();
-
-            let [{ count }] = memberStrikeNumber;
-
             const priceStrike = await PriceStrike.create({
                 member_id: member.id,
-                strike_number: 1 + Number(count)
+                active: 1
             });
 
             return priceStrike;
@@ -78,6 +73,8 @@ class PriceStrikeController {
      */
     async show({ params }) {
         // const priceStrike = await PriceStrike.findOrFail(params.id);
+        let priceStrike = null;
+        let count = 0;
 
         const member = await Member.query()
             .where({ facebook: params.id })
@@ -85,17 +82,26 @@ class PriceStrikeController {
 
         if (!member) {
             /* return response
-                .status(404)
-                .send({ error: { message: "User not Found!" } });*/
-            return [];
+                    .status(404)
+                    .send({ error: { message: "User not Found!" } });*/
+
+            return [priceStrike, count];
+        } else {
+            count = await PriceStrike.query()
+                .where({ active: 1 })
+                .where({ member_id: member.id })
+                .count();
+
+            priceStrike = await PriceStrike.query()
+                .where({ active: 1 })
+                .where({ member_id: member.id })
+                .with("member")
+                .fetch();
         }
+        console.log(count);
+        console.log(priceStrike.rows);
 
-        const priceStrike = await PriceStrike.query()
-            .where({ member_id: member.id })
-            .with("member")
-            .fetch();
-
-        return priceStrike;
+        return [priceStrike.rows[0], count[0].count];
     }
 
     /**
@@ -107,7 +113,7 @@ class PriceStrikeController {
      * @param {Response} ctx.response
      */
     async update({ params, request }) {
-        const data = request.only(["member_id", "strike_number"]);
+        const data = request.only(["active"]);
 
         const priceStrike = await PriceStrike.findOrFail(params.id);
 
@@ -129,7 +135,9 @@ class PriceStrikeController {
     async destroy({ params }) {
         const priceStrike = await PriceStrike.findOrFail(params.id);
 
-        await priceStrike.delete();
+        priceStrike.active = "0";
+
+        await priceStrike.save();
     }
 }
 
