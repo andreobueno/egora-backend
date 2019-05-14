@@ -25,6 +25,7 @@ class PriceStrikeController {
             .where({ active: 1 })
             .with("member")
             .fetch();
+        console.log(priceStrikes);
 
         return priceStrikes;
     }
@@ -98,10 +99,8 @@ class PriceStrikeController {
                 .with("member")
                 .fetch();
         }
-        console.log(count);
-        console.log(priceStrike.rows);
 
-        return [priceStrike.rows[0], count[0].count];
+        return [priceStrike.rows, count[0].count];
     }
 
     /**

@@ -29,3 +29,5 @@ Route.resource("/members", "MemberController").apiOnly();
 Route.resource("/priceStrikes", "PriceStrikeController").apiOnly();
 
 Route.resource("/messages", "MessageController").apiOnly();
+
+Route.resource("/removedMembers", "RemovedMemberController").apiOnly();
